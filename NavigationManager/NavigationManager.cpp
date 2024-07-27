@@ -1,9 +1,7 @@
 #include "libxml/xmlmemory.h"
 #include "libxml/xmlstring.h"
 #include <NavigationManager.hpp>
-#include <bit>
 #include <cstring>
-#include <iostream>
 
 Screen::Screen(const xmlChar *nav) {
 

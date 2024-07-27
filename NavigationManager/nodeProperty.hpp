@@ -20,7 +20,7 @@ typedef struct StyleProp {
 typedef struct ScreenProp {
   int windowHeight;
   int windowWidth;
-  wchar_t ***_windowBuffer;
+  unsigned char ***_windowBuffer;
   int ***_colorMatrix;
   char *_navName;
 } __SCREENPROP;
