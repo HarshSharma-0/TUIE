@@ -19,15 +19,18 @@ public:
   Screen *getScreenTree() { return screenTree; }
 
 private:
-  std::map<std::string, xmlDoc *> moduleMap; // <fileName,doctree>
+  std::map<std::string, std::string> fileMap; // <fileName,filepath>
+  std::map<std::string, xmlDoc *> moduleMap;
+  std::map<std::string, Screen *> modeluStart;
 
   std::filesystem::path __parsePath = "./";
+
   bool status{false};
   Screen *screenTree{nullptr};
 
-  bool treeAndReadXmlFile();
-  Screen *createXmlTree(xmlNode *);
-  Node *createXmlChildrenTree(xmlNode *);
+  void filesystemTree();
+  Screen *createScreenTree(xmlNode *);
+  Node *createNodeChildrenTree(xmlNode *);
   bool resolveAttr(xmlNode *, const xmlChar *[], const xmlChar *[], Node *);
 };
 

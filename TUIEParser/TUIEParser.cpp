@@ -1,7 +1,6 @@
 #include "NavigationManager.hpp"
 #include "funchelper.hpp"
 #include "libxml/parser.h"
-#include "libxml/xmlerror.h"
 #include "libxml/xmlmemory.h"
 #include "libxml/xmlstring.h"
 #include "nodeProperty.hpp"
@@ -22,7 +21,7 @@ XMLParser::XMLParser(const char *filename) {
     __parsePath /= filename;
     if (std::filesystem::exists(__parsePath)) {
       std::filesystem::current_path(__parsePath);
-      status = treeAndReadXmlFile();
+      filesystemTree();
     } else {
       std::cout << "please give correct app name" << __parsePath << std::endl;
     }
@@ -38,33 +37,23 @@ XMLParser::~XMLParser() {
   xmlCleanupParser();
 };
 
-bool XMLParser::treeAndReadXmlFile() {
+void XMLParser::filesystemTree() {
   for (const auto &parserIterator :
        std::filesystem::recursive_directory_iterator(__parsePath)) {
     if (parserIterator.is_regular_file()) {
       if (parserIterator.path().extension() == ".xml") {
-        moduleMap[parserIterator.path().filename().string()] =
-            xmlReadFile(parserIterator.path().string().c_str(), nullptr, 0);
-        if (moduleMap[parserIterator.path().filename().string()] == nullptr) {
-          std::cout << "error parsing file" << std::endl;
-          return false;
-        }
+        fileMap[parserIterator.path().filename().string()] =
+            parserIterator.path().string();
       }
     }
   }
-
-  screenTree = createXmlTree(xmlDocGetRootElement(moduleMap[rootFileName]));
-
-  if (screenTree != nullptr)
-    return true;
-  return false;
+  return;
 }
 
-Screen *XMLParser::createXmlTree(xmlNode *rootElement) {
+Screen *XMLParser::createScreenTree(xmlNode *rootElement) {
 
   Screen *root{nullptr};
   Screen *crawler{nullptr};
-  int **screenDimensionMatrix{nullptr};
 
   if (xmlStrEqual(rootElement->name, predefinedRootTag) != 1) {
     std::cout << "root element not <cursesEngine> exiting" << std::endl;
@@ -85,14 +74,14 @@ Screen *XMLParser::createXmlTree(xmlNode *rootElement) {
         }
       }
 
-      crawler->ViewData = createXmlChildrenTree(cur_node->children);
+      crawler->ViewData = createNodeChildrenTree(cur_node->children);
     }
   }
 
   return root;
 }
 
-Node *XMLParser::createXmlChildrenTree(xmlNode *child) {
+Node *XMLParser::createNodeChildrenTree(xmlNode *child) {
 
   Node *children{nullptr};
   Node *crawler{nullptr};
@@ -120,7 +109,7 @@ Node *XMLParser::createXmlChildrenTree(xmlNode *child) {
           }
 
           crawler->nodeType = i;
-          crawler->nodeChild = createXmlChildrenTree(cur_node->children);
+          crawler->nodeChild = createNodeChildrenTree(cur_node->children);
         }
       }
     }

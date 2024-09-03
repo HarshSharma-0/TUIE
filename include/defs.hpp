@@ -1,5 +1,6 @@
 #ifndef DEFS_H
 #define DEFS_H
+
 #include "libxml/xmlstring.h"
 
 namespace RenderTypes {
@@ -35,4 +36,5 @@ extern const xmlChar *predefinedGlobalMap[];
 extern const xmlChar *tagProp[];
 extern const xmlChar *predefinedRootTag;
 extern const char *rootFileName;
+
 #endif

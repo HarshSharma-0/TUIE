@@ -26,3 +26,6 @@ const xmlChar *predefinedAlignAttributes[] = {
     (const xmlChar *)"center",       (const xmlChar *)"flex-end",
     (const xmlChar *)"flex-start",   (const xmlChar *)"space-between",
     (const xmlChar *)"space-around", nullptr};
+
+const xmlChar *importAttributes[] = {(const xmlChar *)"ModuleName",
+                                     (const xmlChar *)"fileName", nullptr};
