@@ -9,19 +9,22 @@
 #include <cstring>
 #include <defs.hpp>
 #include <iostream>
+#include <memory>
 #include <ostream>
+#include <string>
 
-XMLParser::XMLParser(const char *filename) {
+XMLParser::XMLParser(const char *fileName) {
 
   LIBXML_TEST_VERSION
   const char *env_Prefix = std::getenv("HOME");
   if (env_Prefix != nullptr) {
     __parsePath = env_Prefix;
     __parsePath /= ".local";
-    __parsePath /= filename;
+    __parsePath /= fileName;
     if (std::filesystem::exists(__parsePath)) {
       std::filesystem::current_path(__parsePath);
       filesystemTree();
+      screenTree = createScreenTree(rootFileName);
     } else {
       std::cout << "please give correct app name" << __parsePath << std::endl;
     }
@@ -32,7 +35,7 @@ XMLParser::XMLParser(const char *filename) {
 };
 
 XMLParser::~XMLParser() {
-  for (const auto &[key, value] : moduleMap)
+  for (const auto &[key, value] : moduleMapNode)
     xmlFreeDoc(value);
   xmlCleanupParser();
 };
@@ -42,7 +45,7 @@ void XMLParser::filesystemTree() {
        std::filesystem::recursive_directory_iterator(__parsePath)) {
     if (parserIterator.is_regular_file()) {
       if (parserIterator.path().extension() == ".xml") {
-        fileMap[parserIterator.path().filename().string()] =
+        filePathMap[parserIterator.path().filename().string()] =
             parserIterator.path().string();
       }
     }
@@ -50,8 +53,62 @@ void XMLParser::filesystemTree() {
   return;
 }
 
-Screen *XMLParser::createScreenTree(xmlNode *rootElement) {
+xmlNode *XMLParser::parseModule(const char *modulefilename) {
 
+  if (filePathMap.find(modulefilename) != filePathMap.end()) {
+    if (moduleMapNode.find(modulefilename) != moduleMapNode.end()) {
+      return xmlDocGetRootElement(moduleMapNode[modulefilename]);
+    }
+
+    xmlDoc *temp{nullptr};
+    temp = xmlReadFile(filePathMap[modulefilename].c_str(), nullptr, 0);
+    moduleMapNode[modulefilename] = temp;
+    return xmlDocGetRootElement(temp);
+  }
+  return nullptr;
+}
+
+xmlNode *XMLParser::resolveModule(const char *moduleName,
+                                  const char *moduleFile) {
+
+  if (extractedModule.find(moduleName) != extractedModule.end()) {
+    return extractedModule[moduleName];
+  }
+
+  xmlNode *temp_node{nullptr};
+  temp_node = parseModule(moduleFile);
+  if (temp_node == nullptr) {
+    return nullptr;
+  }
+  for (xmlNode *cur_node = temp_node; cur_node; cur_node = cur_node->next) {
+    if (cur_node->type == XML_ELEMENT_NODE) {
+      if (xmlStrEqual(cur_node->name, (const xmlChar *)"ModuleDefine") == 1) {
+        xmlChar *moduleName{nullptr};
+        moduleName = xmlGetProp(cur_node, (const xmlChar *)"name");
+        if (moduleName == NULL) {
+          std::cout << "Module declaration on file not contain module name"
+                    << std::endl
+                    << "error in module file" << filePathMap[moduleFile]
+                    << std::endl;
+          xmlFree(moduleName);
+          return nullptr;
+        }
+        extractedModule[(const char *)moduleName] = cur_node->children;
+      }
+    }
+  }
+  if (extractedModule.find(moduleName) == extractedModule.end()) {
+    std::cout << "module not found exiting caller " << std::endl
+              << "error in file" << filePathMap[moduleFile] << std::endl;
+    return nullptr;
+  }
+  std::cout << "returning test module" << std::endl;
+  return extractedModule[moduleName];
+}
+
+Screen *XMLParser::createScreenTree(const char *rootFile) {
+
+  xmlNode *rootElement = parseModule(rootFile);
   Screen *root{nullptr};
   Screen *crawler{nullptr};
 
@@ -62,6 +119,7 @@ Screen *XMLParser::createScreenTree(xmlNode *rootElement) {
 
   for (xmlNode *cur_node = rootElement->children; cur_node;
        cur_node = cur_node->next) {
+    std::cout << cur_node->name << std::endl;
     if (cur_node->type == XML_ELEMENT_NODE) {
       if (xmlStrEqual((const xmlChar *)"Screen", cur_node->name) == 1) {
         if (crawler != nullptr) {
@@ -74,42 +132,92 @@ Screen *XMLParser::createScreenTree(xmlNode *rootElement) {
         }
       }
 
-      crawler->ViewData = createNodeChildrenTree(cur_node->children);
+      crawler->ViewData = createNodeChildrenTree(cur_node->children, rootFile);
+      if (crawler->ViewData == nullptr) {
+        status = true;
+        return nullptr;
+      }
     }
   }
 
   return root;
 }
 
-Node *XMLParser::createNodeChildrenTree(xmlNode *child) {
+Node *XMLParser::createNodeChildrenTree(xmlNode *child,
+                                        const char *currentfile) {
 
   Node *children{nullptr};
   Node *crawler{nullptr};
+  std::cout << "called for file " << filePathMap[currentfile] << std::endl;
 
   for (xmlNode *cur_node = child; cur_node; cur_node = cur_node->next) {
+    std::cout << "in loop in file " << filePathMap[currentfile] << std::endl;
     if (cur_node->type == XML_ELEMENT_NODE) {
       for (int i = 0; predefinedRenderMap[i] != nullptr; i++) {
         if (xmlStrEqual(cur_node->name, predefinedRenderMap[i]) == 1) {
+          std::cout << "node type " << predefinedRenderMap[i] << std::endl;
           if (children == nullptr) {
             children = new Node;
             crawler = children;
+          }
+
+          if (i == RenderTypes::ENGINE_MODULE) {
+            xmlChar *moduleFile{nullptr};
+            moduleFile = xmlGetProp(cur_node, (const xmlChar *)"fileName");
+            if (moduleFile != NULL) {
+              xmlChar *moduleID{nullptr};
+              xmlChar *moduleName{nullptr};
+              moduleID = xmlGetProp(cur_node, (const xmlChar *)"moduleId");
+
+              if (moduleID == NULL) {
+                std::cout << "module id not found while trying to parse file:"
+                          << std::endl
+                          << "error in file" << filePathMap[currentfile]
+                          << std::endl;
+                xmlFree(moduleID);
+                return nullptr;
+              }
+              moduleName = xmlGetProp(cur_node, (const xmlChar *)"moduleName");
+              if (moduleName == NULL) {
+                std::cout << "please provide module name :" << std::endl
+                          << "error in file" << filePathMap[currentfile]
+                          << std::endl;
+                xmlFree(moduleName);
+                return nullptr;
+              }
+              xmlNode *aux = resolveModule((const char *)moduleName,
+                                           (const char *)moduleFile);
+              crawler->nodeChild =
+                  createNodeChildrenTree(aux, (const char *)moduleFile);
+              xmlFree(moduleName);
+              xmlFree(moduleFile);
+              xmlFree(moduleID);
+              continue;
+            }
+            std::cout << "module file doesnt exist" << std::endl
+                      << "module used in file :" << filePathMap[currentfile]
+                      << std::endl;
+            xmlFree(moduleFile);
+            delete children;
+            return nullptr;
           }
           if (children != nullptr) {
             crawler->nodeNext = new Node;
             crawler = crawler->nodeNext;
           }
           crawler->nodeStyle = new __NODEPROP;
-
           if (resolveAttr(cur_node, tagProp, predefinedAlignAttributes,
                           crawler) != true) {
-            std::cout << "before free" << std::endl;
             delete children;
-            std::cout << "after children" << std::endl;
             return nullptr;
           }
-
           crawler->nodeType = i;
-          crawler->nodeChild = createNodeChildrenTree(cur_node->children);
+          if (cur_node->children) {
+            crawler->nodeChild =
+                createNodeChildrenTree(cur_node->children, currentfile);
+            if (crawler->nodeChild == nullptr)
+              return nullptr;
+          }
         }
       }
     }
@@ -158,13 +266,6 @@ bool XMLParser::resolveAttr(xmlNode *__node, const xmlChar *__from[],
       }
 
       xmlFree(attrId);
-    } else {
-      if (i == 0) {
-        std::cout << "please check you file name"
-                  << "missing id tag always provide id "
-                  << "in your components" << std::endl;
-        return false;
-      }
     }
   }
   return true;

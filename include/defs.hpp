@@ -12,6 +12,7 @@ constexpr int ENGINE_TOUCHABLE = 3;
 constexpr int ENGINE_PROGRESS = 4;
 constexpr int ENGINE_ICON = 5;
 constexpr int ENGINE_MODULE = 6;
+constexpr int ENFINE_MODULE_DEFINE = 7;
 
 constexpr int JUSTIFY_CENTER = 0;
 constexpr int JUSTIFY_FLEX_START = 1;

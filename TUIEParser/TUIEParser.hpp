@@ -1,6 +1,7 @@
 #ifndef TUIE_PARSER_H
 #define TUIE_PARSER_H
 
+#include "libxml/xmlstring.h"
 #include <NavigationManager.hpp>
 #include <asm-generic/termios.h>
 #include <cstdlib>
@@ -10,6 +11,7 @@
 #include <libxml/tree.h>
 #include <map>
 #include <nodeProperty.hpp>
+#include <string>
 
 class XMLParser {
 public:
@@ -19,18 +21,19 @@ public:
   Screen *getScreenTree() { return screenTree; }
 
 private:
-  std::map<std::string, std::string> fileMap; // <fileName,filepath>
-  std::map<std::string, xmlDoc *> moduleMap;
-  std::map<std::string, Screen *> modeluStart;
-
+  std::map<std::string, std::string> filePathMap; // <fileName,filepath>
+  std::map<std::string, xmlDoc *> moduleMapNode;
+  std::map<std::string, xmlNode *> extractedModule;
   std::filesystem::path __parsePath = "./";
 
   bool status{false};
   Screen *screenTree{nullptr};
 
   void filesystemTree();
-  Screen *createScreenTree(xmlNode *);
-  Node *createNodeChildrenTree(xmlNode *);
+  xmlNode *parseModule(const char *);
+  Screen *createScreenTree(const char *);
+  Node *createNodeChildrenTree(xmlNode *, const char *);
+  xmlNode *resolveModule(const char *, const char *);
   bool resolveAttr(xmlNode *, const xmlChar *[], const xmlChar *[], Node *);
 };
 

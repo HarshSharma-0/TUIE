@@ -16,15 +16,15 @@ void Screen::init(int width, int height) {
     return;
   ScreenStyle->windowWidth = width;
   ScreenStyle->windowHeight = height;
-  ScreenStyle->_windowBuffer = new wchar_t **[2];
+  //  ScreenStyle->_windowBuffer = new wchar_t **[2];
   if (ScreenStyle->_windowBuffer == nullptr)
     return;
   for (int i = 0; i < 1; i++) {
-    ScreenStyle->_windowBuffer[i] = new wchar_t *[height];
+    // ScreenStyle->_windowBuffer[i] = new wchar_t *[height];
     if (ScreenStyle->_windowBuffer[i])
       return;
     for (int j = 0; j < height; j++) {
-      ScreenStyle->_windowBuffer[i][j] = new wchar_t[width];
+      // ScreenStyle->_windowBuffer[i][j] = new wchar_t[width];
       if (ScreenStyle->_windowBuffer[i][j] == nullptr)
         return;
     }
