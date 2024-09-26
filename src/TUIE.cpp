@@ -1,5 +1,6 @@
 #include "TUIE.hpp"
 #include "TUIEParser.hpp"
+#include "funchelper.hpp"
 #include <asm-generic/ioctls.h>
 #include <asm-generic/termios.h>
 #include <iostream>
@@ -16,10 +17,14 @@ cursesUI::cursesUI(const char *nameOfFile) {
   width = windowParameters.ws_col;
 
   XMLParser parserInstance(nameOfFile);
-  if (!parserInstance.parserStatus()) {
-    std::cout << "exiting Parser error code caller" << std::endl;
+  if (parserInstance.parserStatus()) {
+    std::cout << "exiting Parser error code caller"
+              << parserInstance.parserStatus() << std::endl;
     return;
   }
+  bool layoutStatus =
+      layoutCalculator(parserInstance.getScreenTree()->ViewData, height, width);
+  delete parserInstance.getScreenTree();
 
   return;
 };

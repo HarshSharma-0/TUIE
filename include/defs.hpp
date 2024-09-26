@@ -5,20 +5,23 @@
 
 namespace RenderTypes {
 
-constexpr int ENGINE_VIEW = 0;
-constexpr int ENGINE_SCROLLVIEW = 1;
-constexpr int ENGINE_TEXT = 2;
-constexpr int ENGINE_TOUCHABLE = 3;
-constexpr int ENGINE_PROGRESS = 4;
-constexpr int ENGINE_ICON = 5;
-constexpr int ENGINE_MODULE = 6;
-constexpr int ENFINE_MODULE_DEFINE = 7;
+constexpr int ENGINE_MODULE = 0;
+constexpr int ENGINE_VIEW = 1;
+constexpr int ENGINE_SCROLLVIEW = 2;
+constexpr int ENGINE_TEXT = 3;
+constexpr int ENGINE_TOUCHABLE = 4;
+constexpr int ENGINE_PROGRESS = 5;
+constexpr int ENGINE_ICON = 6;
+constexpr int ENGINE_MODULE_DEFINE = 7;
 
 constexpr int JUSTIFY_CENTER = 0;
 constexpr int JUSTIFY_FLEX_START = 1;
 constexpr int JUSTIFY_FLEX_END = 2;
 constexpr int JUSTIFY_SPACE_BETWEEN = 3;
 constexpr int JUSTIFY_SPACE_AROUND = 4;
+
+constexpr int FLEX_DIRECTION_ROW = 0;
+constexpr int FLEX_DIRECTION_COL = 1;
 
 constexpr int VIEW_ID = 0;
 constexpr int VIEW_FLEX = 1;

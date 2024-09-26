@@ -11,7 +11,7 @@ typedef struct StyleProp {
   int margin;
   int padding;
   int flexDirection;
-  int flex;
+  float flex;
   unsigned char *backgroundColor;
   unsigned char *bordercolor;
   unsigned char *color;
@@ -20,8 +20,6 @@ typedef struct StyleProp {
 typedef struct ScreenProp {
   int windowHeight;
   int windowWidth;
-  unsigned char ***_windowBuffer;
-  int ***_colorMatrix;
   char *_navName;
 } __SCREENPROP;
 

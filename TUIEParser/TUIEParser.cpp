@@ -9,9 +9,7 @@
 #include <cstring>
 #include <defs.hpp>
 #include <iostream>
-#include <memory>
 #include <ostream>
-#include <string>
 
 XMLParser::XMLParser(const char *fileName) {
 
@@ -30,7 +28,8 @@ XMLParser::XMLParser(const char *fileName) {
     }
 
   } else {
-    std::cout << "please set your prefix to the installation dir of the app";
+    std::cout << "cannot find (.local) folder using your env $HOME"
+              << std::endl;
   }
 };
 
@@ -80,11 +79,12 @@ xmlNode *XMLParser::resolveModule(const char *moduleName,
   if (temp_node == nullptr) {
     return nullptr;
   }
+
   for (xmlNode *cur_node = temp_node; cur_node; cur_node = cur_node->next) {
     if (cur_node->type == XML_ELEMENT_NODE) {
-      if (xmlStrEqual(cur_node->name, (const xmlChar *)"ModuleDefine") == 1) {
+      if (xmlStrEqual(cur_node->name, (const xmlChar *)"ModuleView") == 1) {
         xmlChar *moduleName{nullptr};
-        moduleName = xmlGetProp(cur_node, (const xmlChar *)"name");
+        moduleName = xmlGetProp(cur_node, (const xmlChar *)"ModuleName");
         if (moduleName == NULL) {
           std::cout << "Module declaration on file not contain module name"
                     << std::endl
@@ -102,7 +102,6 @@ xmlNode *XMLParser::resolveModule(const char *moduleName,
               << "error in file" << filePathMap[moduleFile] << std::endl;
     return nullptr;
   }
-  std::cout << "returning test module" << std::endl;
   return extractedModule[moduleName];
 }
 
@@ -119,7 +118,6 @@ Screen *XMLParser::createScreenTree(const char *rootFile) {
 
   for (xmlNode *cur_node = rootElement->children; cur_node;
        cur_node = cur_node->next) {
-    std::cout << cur_node->name << std::endl;
     if (cur_node->type == XML_ELEMENT_NODE) {
       if (xmlStrEqual((const xmlChar *)"Screen", cur_node->name) == 1) {
         if (crawler != nullptr) {
@@ -133,8 +131,8 @@ Screen *XMLParser::createScreenTree(const char *rootFile) {
       }
 
       crawler->ViewData = createNodeChildrenTree(cur_node->children, rootFile);
-      if (crawler->ViewData == nullptr) {
-        status = true;
+
+      if (status) {
         return nullptr;
       }
     }
@@ -148,20 +146,14 @@ Node *XMLParser::createNodeChildrenTree(xmlNode *child,
 
   Node *children{nullptr};
   Node *crawler{nullptr};
-  std::cout << "called for file " << filePathMap[currentfile] << std::endl;
 
   for (xmlNode *cur_node = child; cur_node; cur_node = cur_node->next) {
-    std::cout << "in loop in file " << filePathMap[currentfile] << std::endl;
+
     if (cur_node->type == XML_ELEMENT_NODE) {
       for (int i = 0; predefinedRenderMap[i] != nullptr; i++) {
         if (xmlStrEqual(cur_node->name, predefinedRenderMap[i]) == 1) {
-          std::cout << "node type " << predefinedRenderMap[i] << std::endl;
-          if (children == nullptr) {
-            children = new Node;
-            crawler = children;
-          }
 
-          if (i == RenderTypes::ENGINE_MODULE) {
+          if (i == RenderTypes::ENGINE_MODULE_DEFINE) {
             xmlChar *moduleFile{nullptr};
             moduleFile = xmlGetProp(cur_node, (const xmlChar *)"fileName");
             if (moduleFile != NULL) {
@@ -187,8 +179,16 @@ Node *XMLParser::createNodeChildrenTree(xmlNode *child,
               }
               xmlNode *aux = resolveModule((const char *)moduleName,
                                            (const char *)moduleFile);
-              crawler->nodeChild =
+
+              Node *temp =
                   createNodeChildrenTree(aux, (const char *)moduleFile);
+              if (children == nullptr) {
+                children = temp;
+                crawler = children;
+              } else {
+                crawler->nodeNext = temp;
+                crawler = crawler->nodeNext;
+              }
               xmlFree(moduleName);
               xmlFree(moduleFile);
               xmlFree(moduleID);
@@ -201,11 +201,18 @@ Node *XMLParser::createNodeChildrenTree(xmlNode *child,
             delete children;
             return nullptr;
           }
-          if (children != nullptr) {
+
+          if (children == nullptr) {
+            children = new Node;
+            crawler = children;
+          } else {
             crawler->nodeNext = new Node;
             crawler = crawler->nodeNext;
           }
+
           crawler->nodeStyle = new __NODEPROP;
+          crawler->nodeStyle->flex = 1;
+          crawler->nodeStyle->flexDirection = RenderTypes::FLEX_DIRECTION_ROW;
           if (resolveAttr(cur_node, tagProp, predefinedAlignAttributes,
                           crawler) != true) {
             delete children;
@@ -215,14 +222,11 @@ Node *XMLParser::createNodeChildrenTree(xmlNode *child,
           if (cur_node->children) {
             crawler->nodeChild =
                 createNodeChildrenTree(cur_node->children, currentfile);
-            if (crawler->nodeChild == nullptr)
-              return nullptr;
           }
         }
       }
     }
   }
-
   return children;
 }
 
@@ -254,6 +258,9 @@ bool XMLParser::resolveAttr(xmlNode *__node, const xmlChar *__from[],
       case 8:
         cpy->nodeStyle->bordercolor = xmlStrdup(attrId);
         break;
+      case 9:
+        cpy->nodeStyle->flexDirection = xmlChartoi(attrId);
+        break;
       default:
         for (int j = 0; __to[j] != nullptr; j++) {
           if (xmlStrEqual(__to[j], attrId) == 1) {
@@ -264,7 +271,6 @@ bool XMLParser::resolveAttr(xmlNode *__node, const xmlChar *__from[],
         }
         break;
       }
-
       xmlFree(attrId);
     }
   }
