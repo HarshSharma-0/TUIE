@@ -22,8 +22,7 @@ cursesUI::cursesUI(const char *nameOfFile) {
               << parserInstance.parserStatus() << std::endl;
     return;
   }
-  bool layoutStatus =
-      layoutCalculator(parserInstance.getScreenTree()->ViewData, height, width);
+  layoutCalculator(parserInstance.getScreenTree()->ViewData, height, width);
   delete parserInstance.getScreenTree();
 
   return;

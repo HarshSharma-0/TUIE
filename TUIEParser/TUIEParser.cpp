@@ -121,6 +121,7 @@ Screen *XMLParser::createScreenTree(const char *rootFile) {
     if (cur_node->type == XML_ELEMENT_NODE) {
       if (xmlStrEqual((const xmlChar *)"Screen", cur_node->name) == 1) {
         if (crawler != nullptr) {
+          crawler->screenPrev = crawler;
           crawler->screenNext = new Screen(cur_node->name);
           crawler = crawler->screenNext;
         }
@@ -186,6 +187,7 @@ Node *XMLParser::createNodeChildrenTree(xmlNode *child,
                 children = temp;
                 crawler = children;
               } else {
+                crawler->nodePrev = crawler;
                 crawler->nodeNext = temp;
                 crawler = crawler->nodeNext;
               }
@@ -206,6 +208,7 @@ Node *XMLParser::createNodeChildrenTree(xmlNode *child,
             children = new Node;
             crawler = children;
           } else {
+            crawler->nodePrev = crawler;
             crawler->nodeNext = new Node;
             crawler = crawler->nodeNext;
           }

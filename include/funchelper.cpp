@@ -15,8 +15,10 @@ float xmlChartoi(xmlChar *__from) {
   return ret;
 }
 
-bool layoutCalculator(Node *main, int &height, int &width) {
+void layoutCalculator(Node *main, int &height, int &width) {
+
   double totalFlex = 0;
+  int tempCordX{0}, tempCordY{0};
   for (Node *loopNode = main; loopNode != nullptr;
        loopNode = loopNode->nodeNext) {
     totalFlex += loopNode->nodeStyle->flex;
@@ -43,13 +45,36 @@ bool layoutCalculator(Node *main, int &height, int &width) {
               << ", Proportion: " << dimensionProportion
               << ", Total Height: " << height << ", Width: " << width
               << std::endl;
-    if (loopNode->nodeChild != nullptr) {
-      bool next =
-          layoutCalculator(loopNode->nodeChild, loopNode->nodeStyle->height,
-                           loopNode->nodeStyle->width);
-    }
+    if (loopNode->nodeChild != nullptr)
+      layoutCalculator(loopNode->nodeChild, loopNode->nodeStyle->height,
+                       loopNode->nodeStyle->width);
     nodeDimension = 0.0;
   }
 
-  return true;
+  for (Node *cordNode = main; cordNode != nullptr;
+       cordNode = cordNode->nodeNext) {
+    if (cordNode->nodeStyle->flexDirection == RenderTypes::FLEX_DIRECTION_ROW) {
+      if (cordNode->nodePrev != nullptr) {
+        tempCordX += cordNode->nodePrev->nodeStyle->width;
+        cordNode->nodeStyle->offSetX = tempCordX;
+        cordNode->nodeStyle->offSetY = 0;
+        continue;
+      }
+      cordNode->nodeStyle->offSetX = 0;
+      cordNode->nodeStyle->offSetY = 0;
+      continue;
+    }
+    if (cordNode->nodeStyle->flexDirection == RenderTypes::FLEX_DIRECTION_COL) {
+      if (cordNode->nodePrev != nullptr) {
+        tempCordY += cordNode->nodePrev->nodeStyle->height;
+        cordNode->nodeStyle->offSetY = tempCordY;
+        cordNode->nodeStyle->offSetX = 0;
+        continue;
+      }
+      cordNode->nodeStyle->offSetX = 0;
+      cordNode->nodeStyle->offSetY = 0;
+      continue;
+    }
+  }
+  return;
 }

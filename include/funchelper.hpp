@@ -6,6 +6,6 @@
 #include <cstddef>
 
 float xmlChartoi(xmlChar *);
-bool layoutCalculator(Node *, int &, int &);
+void layoutCalculator(Node *, int &, int &);
 
 #endif // !FUNC_HELPER_H
