@@ -15,6 +15,12 @@ float xmlChartoi(xmlChar *__from) {
   return ret;
 }
 
+/**
+ * Function layoutCalculator , calculate the layout and resolve the colours fron
+ * Hex code to the R,G,B format that we can use to tell the terminal what color
+ * should be given to specific position on the screen
+ * **/
+
 void layoutCalculator(Node *main, int &height, int &width) {
 
   double totalFlex = 0;

@@ -11,6 +11,21 @@
 #include <iostream>
 #include <ostream>
 
+/**
+ * This is the explanation to the executioin flow of the XMLParser constructor
+ * first we extract the HOME enviroment variable and then we check what the
+ *function returned
+ *
+ * if return value is not a nulllptr we proceed further and create the parsing
+ *path object and is goes like
+ * __parssePath = $HOME/.local/appname and if this path exist we create the
+ *filesystem tree with respective file name as key and map that into an std::map
+ * and after that we create the screen tree using parser tree
+ *
+ * if the return value is nullptr the we simply exit the program and continue
+ *our termination
+ **/
+
 XMLParser::XMLParser(const char *fileName) {
 
   LIBXML_TEST_VERSION
@@ -33,11 +48,20 @@ XMLParser::XMLParser(const char *fileName) {
   }
 };
 
+/**
+ * The desctructor cleans the parser and the doc tree created in parse module
+ **/
+
 XMLParser::~XMLParser() {
   for (const auto &[key, value] : moduleMapNode)
     xmlFreeDoc(value);
   xmlCleanupParser();
 };
+
+/**
+ * Function filesystem tree created the map if the file only with the .xml
+ *exxtension and ignore the rest
+ **/
 
 void XMLParser::filesystemTree() {
   for (const auto &parserIterator :
@@ -52,13 +76,21 @@ void XMLParser::filesystemTree() {
   return;
 }
 
+/**
+ * Functoin parseModule is used to create the map of the xml parsed data so
+ * whenever we require a specific module we can probe the map if the module
+ * exist we return the xmlNode else if the module is not parsed it is parsed and
+ * returned but first we check if the module exist or not so reduce the compute
+ * cost
+ **/
+
 xmlNode *XMLParser::parseModule(const char *modulefilename) {
 
   if (filePathMap.find(modulefilename) != filePathMap.end()) {
     if (moduleMapNode.find(modulefilename) != moduleMapNode.end()) {
       return xmlDocGetRootElement(moduleMapNode[modulefilename]);
     }
-
+    // part below runs if the module doesnt exist
     xmlDoc *temp{nullptr};
     temp = xmlReadFile(filePathMap[modulefilename].c_str(), nullptr, 0);
     moduleMapNode[modulefilename] = temp;
@@ -66,6 +98,14 @@ xmlNode *XMLParser::parseModule(const char *modulefilename) {
   }
   return nullptr;
 }
+
+/**
+ * Funtion resolveModule is used to extract module from the xml tree and map
+ * each xml module node to the expected map and preserve the informatijon for
+ * further use if there exist the module in map it is checked first and returned
+ * and we also check if the paremeter in the module is correct or not to provide
+ * a accurute verbose of the where is the error or in which file
+ **/
 
 xmlNode *XMLParser::resolveModule(const char *moduleName,
                                   const char *moduleFile) {
@@ -105,6 +145,15 @@ xmlNode *XMLParser::resolveModule(const char *moduleName,
   return extractedModule[moduleName];
 }
 
+/**
+ * Function createScreenTree is the function that is called for the root file of
+ * the app and the screens are processed and the childrens are extracted and all
+ * the relative information that a sceen must have for now there only exist the
+ * nav name but in future fruther more tags will be added in the screen tag also
+ * in this function we use crawler to crawl over the tree and bind the specific
+ * node in tree with correct data
+ **/
+
 Screen *XMLParser::createScreenTree(const char *rootFile) {
 
   xmlNode *rootElement = parseModule(rootFile);
@@ -141,6 +190,16 @@ Screen *XMLParser::createScreenTree(const char *rootFile) {
 
   return root;
 }
+
+/**
+ * Function createNodeChildrenTree is used to parse and create the node of the
+ * tags other than screen that a specific sceen is expeced to render , it uses
+ * simple method to parse specific node and each node have the given a unique id
+ * that can be used to identify the node type it also utilises the crawler to
+ * crawl over the tree and to add relivent data and node to the tree and a
+ * function to extract the props a node have
+ *
+ * **/
 
 Node *XMLParser::createNodeChildrenTree(xmlNode *child,
                                         const char *currentfile) {
@@ -233,6 +292,12 @@ Node *XMLParser::createNodeChildrenTree(xmlNode *child,
   return children;
 }
 
+/**
+ * The entire purpose of the resolveAttr function is to extract the props in the
+ * xml node and created the copy of that attribute in the node that the renderr
+ * can understand and utilise
+ * **/
+
 bool XMLParser::resolveAttr(xmlNode *__node, const xmlChar *__from[],
                             const xmlChar *__to[], Node *cpy) {
   xmlChar *attrId{nullptr};
@@ -263,6 +328,9 @@ bool XMLParser::resolveAttr(xmlNode *__node, const xmlChar *__from[],
         break;
       case 9:
         cpy->nodeStyle->flexDirection = xmlChartoi(attrId);
+        break;
+      case 10:
+        cpy->nodeStyle->color = xmlStrdup(attrId);
         break;
       default:
         for (int j = 0; __to[j] != nullptr; j++) {
