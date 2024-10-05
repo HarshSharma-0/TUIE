@@ -1,6 +1,5 @@
 #include "NavigationManager.hpp"
 #include "defs.hpp"
-#include "libxml/xmlstring.h"
 #include <cmath>
 #include <cstddef>
 #include <cstdlib>
@@ -8,11 +7,10 @@
 #include <iostream>
 #include <unistd.h>
 
-float xmlChartoi(xmlChar *__from) {
-  float ret{0};
-  char *endPtr{nullptr};
-  ret = strtof((const char *)__from, &endPtr);
-  return ret;
+void hexToRGB(const char hex[], int &r, int &g, int &b) {
+  const char *hexColor = (hex[0] == '#') ? hex + 1 : hex;
+  sscanf(hexColor, "%02x%02x%02x", &r, &g, &b);
+  return;
 }
 
 /**

@@ -6,10 +6,12 @@
 #include "nodeProperty.hpp"
 #include <TUIEParser.hpp>
 #include <cstddef>
+#include <cstdlib>
 #include <cstring>
 #include <defs.hpp>
 #include <iostream>
 #include <ostream>
+#include <string>
 
 /**
  * This is the explanation to the executioin flow of the XMLParser constructor
@@ -310,27 +312,33 @@ bool XMLParser::resolveAttr(xmlNode *__node, const xmlChar *__from[],
         cpy->nodeName = xmlStrdup(attrId);
         break;
       case 1:
-        cpy->nodeStyle->flex = xmlChartoi(attrId);
+        cpy->nodeStyle->flex = strtof((const char *)attrId, NULL);
         break;
       case 4:
-        cpy->nodeStyle->backgroundColor = xmlStrdup(attrId);
+        hexToRGB((const char *)attrId, cpy->nodeStyle->background_r,
+                 cpy->nodeStyle->background_g, cpy->nodeStyle->background_b);
+
         break;
       case 5:
-        cpy->nodeStyle->margin = xmlChartoi(attrId);
+        cpy->nodeStyle->margin = std::atoi((const char *)attrId);
         break;
       case 6:
-        cpy->nodeStyle->padding = xmlChartoi(attrId);
+        cpy->nodeStyle->padding = std::atoi((const char *)attrId);
         break;
       case 7:
         break;
       case 8:
-        cpy->nodeStyle->bordercolor = xmlStrdup(attrId);
+        hexToRGB((const char *)attrId, cpy->nodeStyle->border_r,
+                 cpy->nodeStyle->border_g, cpy->nodeStyle->border_b);
+
         break;
       case 9:
-        cpy->nodeStyle->flexDirection = xmlChartoi(attrId);
+        cpy->nodeStyle->flexDirection = std::atoi((const char *)attrId);
         break;
       case 10:
-        cpy->nodeStyle->color = xmlStrdup(attrId);
+        hexToRGB((const char *)attrId, cpy->nodeStyle->color_r,
+                 cpy->nodeStyle->color_g, cpy->nodeStyle->color_b);
+
         break;
       default:
         for (int j = 0; __to[j] != nullptr; j++) {

@@ -2,10 +2,9 @@
 #define FUNC_HELPER_H
 
 #include "NavigationManager.hpp"
-#include "libxml/xmlstring.h"
 #include <cstddef>
 
-float xmlChartoi(xmlChar *);
+void hexToRGB(const char[], int &, int &, int &);
 void layoutCalculator(Node *, int &, int &);
 
 #endif // !FUNC_HELPER_H

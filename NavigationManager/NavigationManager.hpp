@@ -1,7 +1,6 @@
 #ifndef NAVIAGTION_MANAGER_HPP
 #define NAVIAGTION_MANAGER_HPP
 
-#include "libxml/xmlstring.h"
 #include <nodeProperty.hpp>
 
 class Node {
@@ -10,7 +9,7 @@ public:
   Node *nodeNext{nullptr};
   Node *nodeChild{nullptr};
   Node *nodePrev{nullptr};
-  xmlChar *nodeName{nullptr};
+  unsigned char *nodeName{nullptr};
   bool isModule{false};
   int nodeType{0};
   __NODEPROP *nodeStyle{nullptr};
@@ -18,12 +17,12 @@ public:
 
 class Screen {
 public:
-  Screen(const xmlChar *);
+  Screen(const unsigned char *);
   ~Screen();
   Screen *screenNext{nullptr};
   Screen *screenPrev{nullptr};
   Node *ViewData{nullptr};
-  xmlChar *ScreenName{nullptr};
+  unsigned char *ScreenName{nullptr};
   __SCREENPROP *ScreenStyle{nullptr};
   void init(int, int);
 };
