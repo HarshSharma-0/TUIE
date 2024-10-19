@@ -19,6 +19,7 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/StateManager
     ${PROJECT_SOURCE_DIR}/NavigationManager
     ${PROJECT_SOURCE_DIR}/TUIEParser
+    ${PROJECT_SOURCE_DIR}/Engine
     ${LIBXML2_INCLUDE_DIR}
 )
 
@@ -29,6 +30,7 @@ file(GLOB SRCS
         "${PROJECT_SOURCE_DIR}/StateManager/*"
         "${PROJECT_SOURCE_DIR}/NavigationManager/*"
         "${PROJECT_SOURCE_DIR}/TUIEParser/*"
+        "${PROJECT_SOURCE_DIR}/Engine/*"
 )
 
 # Add the library sources

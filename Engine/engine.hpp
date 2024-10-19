@@ -33,19 +33,27 @@ typedef struct __attribute__((packed)) {
   char data[1];
   char reset[7];
 
-  char null[1];
+  char nullorN[1];
 } pixel;
 
-class RendererEngine {
+class TUIEEngine {
 
 public:
-  void updateData(pixel *, size_t);
+  TUIEEngine(int &_height, int &_width, Node *_window);
+  ~TUIEEngine();
+
   void drawFromNode(Node *);
+  void draw();
   void refresh();
+  bool terminate{false};
 
 private:
   pixel *rendererPixel{nullptr};
-  size_t lenPixel{0};
+  size_t sizPixel{0};
+  Node *window{nullptr};
+  int cells{0};
+  int rheight{0};
+  int rwidth{0};
 };
 
 #endif

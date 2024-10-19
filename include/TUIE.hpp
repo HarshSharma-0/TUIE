@@ -1,20 +1,23 @@
 #ifndef TUIE_H
 #define TUIE_H
 
+#include "NavigationManager.hpp"
 #include <termios.h>
 
-class cursesUI {
+class TUIE {
 public:
-  cursesUI(const char *);
-  ~cursesUI();
-
-  void doUpdate(int);
-
-private:
+  TUIE(const char *);
+  ~TUIE() {
+    if (TUIEwindow != nullptr)
+      delete TUIEwindow;
+  }
   void enableRawMode();
   void disableRawMode();
+  Screen *TUIEwindow{nullptr};
+
+private:
   void exitSafe(int);
   struct termios orig_termios;
 };
 
-#endif // CURSESUI_H
+#endif

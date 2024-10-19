@@ -1,12 +1,13 @@
-#include "TUIE.hpp"
-#include "TUIEParser.hpp"
-#include "funchelper.hpp"
+#include <TUIE.hpp>
+#include <TUIEParser.hpp>
 #include <asm-generic/ioctls.h>
 #include <asm-generic/termios.h>
+#include <funchelper.hpp>
 #include <iostream>
 #include <sys/ioctl.h>
 #include <unistd.h>
-cursesUI::cursesUI(const char *nameOfFile) {
+
+TUIE::TUIE(const char *nameOfFile) {
 
   int height{0};
   int width{0};
@@ -22,18 +23,12 @@ cursesUI::cursesUI(const char *nameOfFile) {
               << parserInstance.parserStatus() << std::endl;
     return;
   }
-  layoutCalculator(parserInstance.getScreenTree()->ViewData, height, width);
-  delete parserInstance.getScreenTree();
-
+  TUIEwindow = parserInstance.getScreenTree();
+  layoutCalculator(TUIEwindow->ViewData, height, width);
   return;
 };
 
-cursesUI::~cursesUI() {
-  // disableRawMode()
-  // enableRawMode();
-};
-
-void cursesUI::enableRawMode() {
+void TUIE::enableRawMode() {
   if (tcgetattr(STDIN_FILENO, &orig_termios) == -1) {
     exitSafe(1);
   }
@@ -51,15 +46,13 @@ void cursesUI::enableRawMode() {
   }
 }
 
-void cursesUI::disableRawMode() {
+void TUIE::disableRawMode() {
   if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_termios) == -1) {
     exit(1);
   }
 }
 
-void cursesUI::doUpdate(int val) {}
-
-void cursesUI::exitSafe(int code) {
+void TUIE::exitSafe(int code) {
   disableRawMode();
   exit(code);
 }

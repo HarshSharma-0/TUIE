@@ -29,30 +29,17 @@ public:
 
 class Navigation {
 public:
-  Screen *navigator;
+  Screen *View;
   char *navName;
 
-  Navigation(Screen *mainNav) : navigator(mainNav), navName(nullptr) {}
+  Navigation(Screen *mainNav) : View(mainNav), navName(nullptr) {}
 
-  void Clampnavigator(Screen *tmp) {
-    navigator = tmp;
-    return;
-  }
-  void setDimensions(int &deltah, int &deltaw) {
-    windowHeight = deltah;
-    windowWidth = deltaw;
-    return;
-  }
   ~Navigation() {
-    if (navigator != nullptr)
-      delete navigator;
+    if (View != nullptr)
+      delete View;
     if (navName != nullptr)
       delete navName;
   }
-
-private:
-  int windowHeight{0};
-  int windowWidth{0};
 };
 
 #endif
