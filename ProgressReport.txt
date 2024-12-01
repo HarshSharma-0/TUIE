@@ -1,17 +1,34 @@
+------------------------------------------------------------------------------------------
 Date:21/11/2024 00:40:22
 Day:ThursDay
 
-*****************************************************************************************
+******************************************************************************************
 
 -> Cleared the previous code and started, fresh form beggining and will this time try to 
-make things more efficient and clear in order to make the program more clear and optimised
+   make things more efficient and clear in order to make the program more clear and optimised
 
 -> Will start from the basic and design some new formats and tuie things so it can be use
-to create graphical gui also, and faster and will use skia to achieve that in future, but
-now due to lack of resources i am limited to Text User Interface only.
+   to create graphical gui also, and faster and will use skia to achieve that in future, but
+   now due to lack of resources i am limited to Text User Interface only.
 
 -> Keep in mind to design the code in such a way that it can be also used to render Graphi
-cal user interface.
+   cal user interface.
 
-*****************************************************************************************
+******************************************************************************************
 
+------------------------------------------------------------------------------------------
+Date:02/12/2024 02:47:25
+Day:Monday
+
+******************************************************************************************
+
+-> Added the vt100 codes to interact with terminal.
+
+-> Added function to toggle between raw mode and original state.
+
+-> Next is to design a interactive menu to load app if the given app is not found
+
+-> Then we'll write the parser and some other properties how the xml should look like when
+   we want to render the thing on screen.
+
+******************************************************************************************
