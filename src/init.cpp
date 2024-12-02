@@ -1,6 +1,9 @@
 #include "init.hpp"
+#include <asm-generic/ioctls.h>
 #include <asm-generic/termbits-common.h>
 #include <asm-generic/termbits.h>
+#include <asm-generic/termios.h>
+#include <bits/ioctl.h>
 #include <bits/termios_inlines.h>
 #include <cstdlib>
 #include <filesystem>
@@ -23,6 +26,7 @@ INIT_TUIE::INIT_TUIE(char *appName) {
 }
 
 int INIT_TUIE::INIT_RAW_MODE() {
+  winsize ws;
   if (tcgetattr(STDIN_FILENO, &org_setting) == -1)
     return -1;
   struct termios raw = org_setting;
@@ -35,6 +39,8 @@ int INIT_TUIE::INIT_RAW_MODE() {
   raw.c_cc[VTIME] = 1;
 
   if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1)
+    return -1;
+  if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1)
     return -1;
 
   return 0;

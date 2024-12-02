@@ -5,6 +5,8 @@
   printf("\033[%d;%dm", (foreground), (background))
 #define TEXTCOLORVAL(codeF, codeB)                                             \
   printf("\033[38;5;%d;48;5%dm", (codeF), (codeB))
+#define RGBCOLORF(R, G, B) printf("\033[38;2;%d;%d;%dm", (R), (G), (B));
+#define RGBCOLORB(R, G, B) printf("\033[48;2;%d;%d;%dm", (R), (G), (B));
 
 // foreground colors default
 #define DEFAULTCOLORF 39
