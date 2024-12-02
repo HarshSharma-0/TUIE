@@ -43,6 +43,8 @@ int INIT_TUIE::INIT_RAW_MODE() {
   if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1)
     return -1;
 
+  INIT_TUIE::windowWidth = ws.ws_col;
+  INIT_TUIE::windowHeight = ws.ws_row;
   return 0;
 }
 

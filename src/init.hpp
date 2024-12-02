@@ -18,5 +18,7 @@ private:
   std::unordered_map<std::string, xmlDoc *> doc;
   struct termios org_setting;
   struct termios nterm_setting;
+  int windowWidth{0};
+  int windowHeight{0};
 };
 #endif // !DEBUG
