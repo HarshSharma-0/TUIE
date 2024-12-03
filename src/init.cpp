@@ -1,4 +1,5 @@
 #include "init.hpp"
+#include "options.hpp"
 #include <asm-generic/ioctls.h>
 #include <asm-generic/termbits-common.h>
 #include <asm-generic/termbits.h>
@@ -8,6 +9,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
+#include <stdexcept>
 #include <unistd.h>
 
 INIT_TUIE::INIT_TUIE(char *appName) {
@@ -16,12 +18,22 @@ INIT_TUIE::INIT_TUIE(char *appName) {
     std::cout << "Ensure the home env path exist" << std::endl;
   }
   std::filesystem::path appPath = home;
-  appPath /= ".local";
+  appPath /= ".local/TUIE";
   appPath /= appName;
   if (std::filesystem::exists(appPath) == false) {
-    std::cout << "wrong projectName : " << appName
-              << " : Project path from where we try to read the app :"
-              << appPath.string() << std::endl;
+    try {
+      appPath.remove_filename();
+      if (std::filesystem::is_empty(appPath)) {
+        throw std::runtime_error(
+            "TUIE DIR EMPTY CHECK YOUR DIRECTORY OR INSTALLYOUR APP PLEASE");
+      }
+      INIT_TUIE::INIT_RAW_MODE();
+      listAndSelect(appPath);
+      INIT_TUIE::EXIT_RAW_MODE();
+    } catch (const std::exception &e) {
+      std::cout << e.what() << std::endl;
+      std::exit(EXIT_FAILURE);
+    }
   }
 }
 
@@ -30,12 +42,11 @@ int INIT_TUIE::INIT_RAW_MODE() {
   if (tcgetattr(STDIN_FILENO, &org_setting) == -1)
     return -1;
   struct termios raw = org_setting;
-  raw.c_iflag &= ~(ICRNL | BRKINT | INPCK | IXON);
+  raw.c_iflag &= ~(ICRNL | BRKINT | INPCK | IXON | ISTRIP);
   raw.c_oflag &= ~OPOST;
-  raw.c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
-  raw.c_cflag &= ~(CSIZE | PARENB);
+  raw.c_lflag &= ~(ECHO | ICANON | ISIG | IEXTEN);
   raw.c_cflag |= CS8;
-  raw.c_cc[VMIN] = 0;
+  raw.c_cc[VMIN] = 1;
   raw.c_cc[VTIME] = 1;
 
   if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) == -1)
