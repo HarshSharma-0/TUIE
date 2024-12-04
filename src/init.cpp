@@ -28,7 +28,10 @@ INIT_TUIE::INIT_TUIE(char *appName) {
             "TUIE DIR EMPTY CHECK YOUR DIRECTORY OR INSTALLYOUR APP PLEASE");
       }
       INIT_TUIE::INIT_RAW_MODE();
-      listAndSelect(appPath);
+      if (listAndSelect(appPath) == -1) {
+        INIT_TUIE::EXIT_RAW_MODE();
+        std::cout << "NOTING SELECTED EXITING" << std::endl;
+      }
       INIT_TUIE::EXIT_RAW_MODE();
     } catch (const std::exception &e) {
       std::cout << e.what() << std::endl;

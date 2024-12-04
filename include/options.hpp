@@ -2,5 +2,5 @@
 #define __OPTIONS_TUIE__
 
 #include <filesystem>
-void listAndSelect(std::filesystem::path &);
+int listAndSelect(std::filesystem::path &);
 #endif // !__OPTIONS_TUIE__

@@ -4,16 +4,18 @@
 #include <stdio.h>
 
 // cursor macro
+#define ESCC '\033'
 #define ESC "\033"
 #define CURSORUP(n) printf(ESC "[%dA", (n))
 #define CURSORDOWN(n) printf(ESC "[%dB", (n))
 #define CURSORRIGHT(n) printf(ESC "[%dC", (n))
 #define CURSORLEFT(n) printf(ESC "[%dD", (n))
-#define CURSORXY(X, Y) printf(ESC "[%d;%dH", (X), (Y))
+#define CURSORXY(Y, X) printf(ESC "[%d;%dH", (Y), (X))
 #define CURSORRESET printf(ESC "[f")
 #define SCROLLDOWN printf(ESC "D")
 #define SCROLLUP printf(ESC "M")
-
+#define CURSORHIDE printf(ESC "[?25l")
+#define CURSORSHOW printf(ESC "[?25h")
 #define SMOOTHSCROLL printf(ESC "[?4h")
 
 // text attribute macro
@@ -48,6 +50,11 @@
 // response \033<w>;<h>R
 
 #define GETTERMTYPE printf(ESC "[c")
+#define SEQ_START '['
+#define KEY_UP 'A'
+#define KEY_DOWN 'B'
+#define KEY_RIGHT 'C'
+#define KEY_LEFT 'D'
 // response \033[?1;< terminal code >0c
 
 #endif // !__VT100_CONSTANTS__
