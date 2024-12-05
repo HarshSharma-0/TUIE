@@ -1,6 +1,7 @@
 #ifndef __init_TUIE__
 #define __init_TUIE__
 
+#include <filesystem>
 #include <libxml2/libxml/parser.h>
 #include <string>
 #include <termios.h>
@@ -13,6 +14,7 @@ public:
   ~INIT_TUIE() = default;
   int INIT_RAW_MODE();
   int EXIT_RAW_MODE();
+  std::filesystem::path appPath;
 
 private:
   std::unordered_map<std::string, xmlDoc *> doc;

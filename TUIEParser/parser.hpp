@@ -1,10 +1,11 @@
 #ifndef __TUIE_PARSER__
 #define __TUIE_PARSER__
 
-class parser {
+#include <filesystem>
+
+class OPEN_APP {
 public:
-  parser();
-  ~parser();
+  int parser(std::filesystem::path &);
 
 private:
 };

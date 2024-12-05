@@ -17,7 +17,7 @@ INIT_TUIE::INIT_TUIE(char *appName) {
   if (home == nullptr) {
     std::cout << "Ensure the home env path exist" << std::endl;
   }
-  std::filesystem::path appPath = home;
+  appPath = home;
   appPath /= ".local/TUIE";
   appPath /= appName;
   if (std::filesystem::exists(appPath) == false) {
@@ -31,6 +31,7 @@ INIT_TUIE::INIT_TUIE(char *appName) {
       if (listAndSelect(appPath) == -1) {
         INIT_TUIE::EXIT_RAW_MODE();
         std::cout << "NOTING SELECTED EXITING" << std::endl;
+        std::exit(EXIT_SUCCESS);
       }
       INIT_TUIE::EXIT_RAW_MODE();
     } catch (const std::exception &e) {
