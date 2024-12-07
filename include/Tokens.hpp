@@ -1,6 +1,7 @@
 #ifndef __TOKEN_TUIE__
 #define __TOKEN_TUIE__
 
+#include "libxml/parser.h"
 #define __APP_ENTRY "app/home/home.xml"
 #define __APP_ROOT ".local/TUIE"
 #define __ERROR_FILE                                                           \
@@ -27,8 +28,12 @@ class node {
 namespace VALIDATOR {
 class TOKEN {
 public:
+  node *getNextNode(xmlNode *);
+  bool validateRoot(xmlNode *);
+
 private:
   const char *xmlTags[4] = {"View", "STEXT", "DTEXT", nullptr};
+  const char *rootTag = "TUIEngine";
 };
 }; // namespace VALIDATOR
 
