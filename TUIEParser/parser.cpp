@@ -1,6 +1,11 @@
 #include "parser.hpp"
-#include <iostream>
+#include "Tokens.hpp"
+#include <filesystem>
+
 int OPEN_APP::parser(std::filesystem::path &appxml) {
-  std::cout << appxml << std::endl;
+  appxml /= __APP_ENTRY;
+  if (std::filesystem::exists(appxml) == false) {
+    return -1;
+  }
   return 1;
 }

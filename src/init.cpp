@@ -1,4 +1,5 @@
 #include "init.hpp"
+#include "Tokens.hpp"
 #include "options.hpp"
 #include <asm-generic/ioctls.h>
 #include <asm-generic/termbits-common.h>
@@ -9,7 +10,6 @@
 #include <cstdlib>
 #include <filesystem>
 #include <iostream>
-#include <stdexcept>
 #include <unistd.h>
 
 INIT_TUIE::INIT_TUIE(char *appName) {
@@ -18,26 +18,17 @@ INIT_TUIE::INIT_TUIE(char *appName) {
     std::cout << "Ensure the home env path exist" << std::endl;
   }
   appPath = home;
-  appPath /= ".local/TUIE";
+  appPath /= __APP_ROOT;
   appPath /= appName;
   if (std::filesystem::exists(appPath) == false) {
-    try {
-      appPath.remove_filename();
-      if (std::filesystem::is_empty(appPath)) {
-        throw std::runtime_error(
-            "TUIE DIR EMPTY CHECK YOUR DIRECTORY OR INSTALLYOUR APP PLEASE");
-      }
-      INIT_TUIE::INIT_RAW_MODE();
-      if (listAndSelect(appPath) == -1) {
-        INIT_TUIE::EXIT_RAW_MODE();
-        std::cout << "NOTING SELECTED EXITING" << std::endl;
-        std::exit(EXIT_SUCCESS);
-      }
+    appPath.remove_filename();
+    INIT_TUIE::INIT_RAW_MODE();
+    if (listAndSelect(appPath) == -1) {
       INIT_TUIE::EXIT_RAW_MODE();
-    } catch (const std::exception &e) {
-      std::cout << e.what() << std::endl;
-      std::exit(EXIT_FAILURE);
+      std::cout << "NOTING SELECTED EXITING" << std::endl;
+      std::exit(EXIT_SUCCESS);
     }
+    INIT_TUIE::EXIT_RAW_MODE();
   }
 }
 
