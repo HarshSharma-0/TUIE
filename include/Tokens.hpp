@@ -16,13 +16,12 @@ struct tagsToken {
 };
 
 class node {
+public:
   tagsToken::tags ltoken;
   char *id{nullptr};
   node *next{nullptr};
   node *prev{nullptr};
   node *child{nullptr};
-  ~node();
-  node(char *);
 };
 
 namespace VALIDATOR {
@@ -32,7 +31,7 @@ public:
   bool validateRoot(xmlNode *);
 
 private:
-  const char *xmlTags[4] = {"View", "STEXT", "DTEXT", nullptr};
+  const char *xmlTags[3] = {"View", "STEXT", "DTEXT"};
   const char *rootTag = "TUIEngine";
 };
 }; // namespace VALIDATOR
