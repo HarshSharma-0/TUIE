@@ -1,19 +1,15 @@
 #include "Tokens.hpp"
 #include "libxml/parser.h"
 #include "libxml/xmlstring.h"
+#include <cstdint>
 #include <iostream>
 
 node *VALIDATOR::TOKEN::getNextNode(xmlNode *tag) {
   node *tmpNode{nullptr};
-  for (const char *token : xmlTags) {
-    if (xmlStrcmp((const xmlChar *)token, tag->name) == 0) {
-      tmpNode = new node;
-      if (tmpNode == nullptr) {
-        return nullptr;
-      }
-      tmpNode->ltoken = tagsToken::tags::VIEW_TOKEN;
-    }
-  }
+
+  tmpNode = new node;
+  tmpNode->ltoken = tagsToken::generateFNVTOKEN((const char *)tag->name);
+
   return tmpNode;
 }
 bool VALIDATOR::TOKEN::validateRoot(xmlNode *check) {
@@ -22,3 +18,19 @@ bool VALIDATOR::TOKEN::validateRoot(xmlNode *check) {
   }
   return false;
 }
+uint64_t tagsToken::generateFNVTOKEN(const char *delta) {
+
+  uint64_t outMask = 0x00;
+  uint32_t offsetMask = 0x811c9dc5;
+  uint32_t maskPrime = 0x01000193;
+  int i = 0;
+  while (*delta) {
+    offsetMask = offsetMask ^ static_cast<uint32_t>(delta[i]);
+    offsetMask = offsetMask * maskPrime;
+    ++delta;
+  }
+  outMask = outMask ^ offsetMask;
+  return outMask;
+};
+
+uint64_t tagsToken::token::VIEW = tagsToken::generateFNVTOKEN("VIEW");
