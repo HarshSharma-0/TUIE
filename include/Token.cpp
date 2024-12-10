@@ -1,6 +1,8 @@
 #include "Tokens.hpp"
 #include "libxml/parser.h"
+#include "libxml/xmlmemory.h"
 #include "libxml/xmlstring.h"
+#include <cmath>
 #include <cstdint>
 #include <iostream>
 
@@ -27,8 +29,23 @@ node *VALIDATOR::TOKEN::getNextNode(xmlNode *tag) {
 }
 
 void tagsToken::resolver::resolveView(const char *ref[], xmlNode *nodeRef) {
-  xmlChar tmp{'\0'};
+  xmlChar *tmp = nullptr;
+  uint64_t token{0};
+
   while (*ref) {
+    tmp = xmlGetProp(nodeRef, (const xmlChar *)*ref);
+    if (tmp != NULL) {
+      token = tagsToken::generateFNVTOKEN(*ref);
+      switch (token) {
+      case tagsToken::VIEW_PROP::id:
+        std::cout << "encountered id" << std::endl;
+        break;
+      default:
+        std::cout << " " << token << " : " << tagsToken::VIEW_PROP::id;
+        break;
+      }
+      xmlFree(tmp);
+    }
     ++ref;
   }
   return;
