@@ -25,8 +25,7 @@ int listAndSelect(std::filesystem::path &dir) {
   CLEARSCREEN;
   CURSORRESET;
   TEXTCOLOR(CYANLF, DEFAULTCOLORB);
-  std::cout << "*********************************************";
-  BOLDTEXT;
+  std::cout << "*********************************************" << BOLDTEXT;
   TEXTCOLOR(GREENF, DEFAULTCOLORB);
   std::cout << " SELECT APP TO OPEN ";
   TEXTCOLOR(CYANLF, DEFAULTCOLORB);
@@ -65,12 +64,19 @@ int listAndSelect(std::filesystem::path &dir) {
           ch = 'q';
         switch (seq[1]) {
         case KEY_UP:
-          if (selected != 0)
+          if (selected != 0) {
             selected--;
+          } else {
+            selected = (length - 1);
+          }
           break;
         case KEY_DOWN:
-          if (selected != (length - 1))
+          if (selected != (length - 1)) {
             selected++;
+          } else {
+            selected = 0;
+          }
+
           break;
         default:
 

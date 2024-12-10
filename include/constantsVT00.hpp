@@ -19,19 +19,19 @@
 #define SMOOTHSCROLL printf(ESC "[?4h")
 
 // text attribute macro
-#define RESETTEXT printf(ESC "[0m")
-#define BOLDTEXT printf(ESC "[1m")
-#define RESETBOLD printf(ESC "[21m")
-#define UNDERLINETEXT printf(ESC "[4m")
-#define RESETUNDERLINE printf(ESC "[24m")
-#define DIMTEXT printf(ESC "[2m")
-#define RESETDIM printf(ESC "[22m")
-#define BLINKTEXT printf(ESC "[5m")
-#define RESETBLINK printf(ESc "[25m")
-#define INVERTEDTEXT printf(ESC "[7m")
-#define RESETINVERTED printf(ESC "[27m")
-#define INVISIBLETEXT printf(ESC "[8m")
-#define RESETINVISIBLE printf(ESC "[28m")
+#define RESETTEXT printf(ESC "[0m");
+#define BOLDTEXT "\033[1m"
+#define RESETBOLD "\033[21m"
+#define UNDERLINETEXT "\033[4m"
+#define RESETUNDERLINE "\033[24m"
+#define DIMTEXT "\033[2m"
+#define RESETDIM "\033[22m"
+#define BLINKTEXT "\033[5m"
+#define RESETBLINK "\033[25m"
+#define INVERTEDTEXT "\033[7m"
+#define RESETINVERTED "\033[27m"
+#define INVISIBLETEXT "\033[8m"
+#define RESETINVISIBLE "\033[28m"
 
 #define SETWIN(W, H) printf(ESC "[%d;%dr", (W), (H))
 #define CLEARRIGHT printf(ESC "[K")

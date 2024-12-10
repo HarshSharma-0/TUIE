@@ -9,9 +9,38 @@ node *VALIDATOR::TOKEN::getNextNode(xmlNode *tag) {
 
   tmpNode = new node;
   tmpNode->ltoken = tagsToken::generateFNVTOKEN((const char *)tag->name);
+  switch (tmpNode->ltoken) {
+  case tagsToken::token::View:
+    tagsToken::resolver::resolveView(tagsToken::token::vProp, tag);
+    break;
+  case tagsToken::token::DText:
+    tagsToken::resolver::resolveDText(tagsToken::token::tProp, tag);
+    break;
+  case tagsToken::token::SText:
+    tagsToken::resolver::resolveSText(tagsToken::token::tProp, tag);
+    break;
+  default:
 
+    break;
+  }
   return tmpNode;
 }
+
+void tagsToken::resolver::resolveView(const char *ref[], xmlNode *nodeRef) {
+  xmlChar tmp{'\0'};
+  while (*ref) {
+    ++ref;
+  }
+  return;
+}
+
+void tagsToken::resolver::resolveDText(const char *tRef[], xmlNode *nodeRef) {
+  return;
+}
+void tagsToken::resolver::resolveSText(const char *dRef[], xmlNode *nodeRef) {
+  return;
+}
+
 bool VALIDATOR::TOKEN::validateRoot(xmlNode *check) {
   if (xmlStrcmp((const xmlChar *)rootTag, check->name) == 0) {
     return true;
@@ -23,9 +52,9 @@ uint64_t tagsToken::generateFNVTOKEN(const char *delta) {
   uint64_t outMask = 0x00;
   uint32_t offsetMask = 0x811c9dc5;
   uint32_t maskPrime = 0x01000193;
-  int i = 0;
+
   while (*delta) {
-    offsetMask = offsetMask ^ static_cast<uint32_t>(delta[i]);
+    offsetMask = offsetMask ^ static_cast<uint32_t>(*delta);
     offsetMask = offsetMask * maskPrime;
     ++delta;
   }
@@ -33,4 +62,7 @@ uint64_t tagsToken::generateFNVTOKEN(const char *delta) {
   return outMask;
 };
 
-uint64_t tagsToken::token::VIEW = tagsToken::generateFNVTOKEN("VIEW");
+const char *tagsToken::token::vProp[] = {
+    "BgColor", "Border", "Padding", "Margin", "Touch", "id", nullptr};
+const char *tagsToken::token::tProp[] = {
+    "Color", "Bold", "UnderLine", "Dim", "Blink", "Inverted", "id", nullptr};
