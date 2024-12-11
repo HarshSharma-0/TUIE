@@ -1,8 +1,6 @@
 #include "Tokens.hpp"
 #include "libxml/parser.h"
-#include "libxml/xmlmemory.h"
 #include "libxml/xmlstring.h"
-#include <cmath>
 #include <cstdint>
 #include <iostream>
 
@@ -13,22 +11,24 @@ node *VALIDATOR::TOKEN::getNextNode(xmlNode *tag) {
   tmpNode->ltoken = tagsToken::generateFNVTOKEN((const char *)tag->name);
   switch (tmpNode->ltoken) {
   case tagsToken::token::View:
-    tagsToken::resolver::resolveView(tagsToken::token::vProp, tag);
-    break;
-  case tagsToken::token::DText:
-    tagsToken::resolver::resolveDText(tagsToken::token::tProp, tag);
+    resolveProp(tag, viewProp, tmpNode->ltoken);
     break;
   case tagsToken::token::SText:
-    tagsToken::resolver::resolveSText(tagsToken::token::tProp, tag);
+    resolveProp(tag, TextProp, tmpNode->ltoken);
     break;
-  default:
+  case tagsToken::token::DText:
+    resolveProp(tag, TextProp, tmpNode->ltoken);
+    break;
+  case tagsToken::token::TextInput:
 
     break;
   }
+
   return tmpNode;
 }
 
-void tagsToken::resolver::resolveView(const char *ref[], xmlNode *nodeRef) {
+void VALIDATOR::TOKEN::resolveProp(xmlNode *nodeRef, const char *ref[],
+                                   uint64_t &type) {
   xmlChar *tmp = nullptr;
   uint64_t token{0};
 
@@ -36,25 +36,81 @@ void tagsToken::resolver::resolveView(const char *ref[], xmlNode *nodeRef) {
     tmp = xmlGetProp(nodeRef, (const xmlChar *)*ref);
     if (tmp != NULL) {
       token = tagsToken::generateFNVTOKEN(*ref);
-      switch (token) {
-      case tagsToken::VIEW_PROP::id:
-        std::cout << "encountered id" << std::endl;
+      switch (type) {
+      case tagsToken::token::View:
+        switch (token) {
+        case tagsToken::VIEW_PROP::id:
+
+          break;
+        case tagsToken::VIEW_PROP::BgColor:
+
+          break;
+        case tagsToken::VIEW_PROP::Margin:
+
+          break;
+        case tagsToken::VIEW_PROP::Padding:
+
+          break;
+        case tagsToken::VIEW_PROP::Touch:
+
+          break;
+        case tagsToken::VIEW_PROP::flex:
+
+          break;
+        case tagsToken::VIEW_PROP::flextype:
+
+          break;
+        case tagsToken::VIEW_PROP::alignItems:
+
+          break;
+        case tagsToken::VIEW_PROP::justifyContent:
+
+          break;
+        case tagsToken::VIEW_PROP::warp:
+
+          break;
+        case tagsToken::VIEW_PROP::BorderCode:
+
+          break;
+        }
         break;
-      default:
-        std::cout << " " << token << " : " << tagsToken::VIEW_PROP::id;
+      case tagsToken::token::DText:
+        switch (token) {
+        case tagsToken::TEXT_PROP::id:
+          break;
+        }
+
+      case tagsToken::token::SText:
+        switch (token) {
+        case tagsToken::TEXT_PROP::Color:
+
+          break;
+        case tagsToken::TEXT_PROP::Bold:
+
+          break;
+        case tagsToken::TEXT_PROP::UnderLine:
+
+          break;
+        case tagsToken::TEXT_PROP::Dim:
+
+          break;
+        case tagsToken::TEXT_PROP::Blink:
+
+          break;
+        case tagsToken::TEXT_PROP::Inverted:
+
+          break;
+        case tagsToken::TEXT_PROP::id:
+
+          break;
+        }
         break;
       }
+
       xmlFree(tmp);
     }
     ++ref;
   }
-  return;
-}
-
-void tagsToken::resolver::resolveDText(const char *tRef[], xmlNode *nodeRef) {
-  return;
-}
-void tagsToken::resolver::resolveSText(const char *dRef[], xmlNode *nodeRef) {
   return;
 }
 
@@ -78,8 +134,3 @@ uint64_t tagsToken::generateFNVTOKEN(const char *delta) {
   outMask = outMask ^ offsetMask;
   return outMask;
 };
-
-const char *tagsToken::token::vProp[] = {
-    "BgColor", "Border", "Padding", "Margin", "Touch", "id", nullptr};
-const char *tagsToken::token::tProp[] = {
-    "Color", "Bold", "UnderLine", "Dim", "Blink", "Inverted", "id", nullptr};

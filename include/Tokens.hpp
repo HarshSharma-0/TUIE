@@ -3,6 +3,7 @@
 
 #include "libxml/parser.h"
 #include <cstdint>
+#include <malloc.h>
 
 #define __APP_ENTRY "app/home/home.xml"
 #define __APP_ROOT ".local/TUIE"
@@ -11,26 +12,27 @@
 
 namespace tagsToken {
 uint64_t generateFNVTOKEN(const char *);
-namespace resolver {
-void resolveView(const char *[], xmlNode *);
-void resolveSText(const char *[], xmlNode *);
-void resolveDText(const char *[], xmlNode *);
-} // namespace resolver
+
 namespace token {
 constexpr uint64_t View = 0x5e4baa18;
 constexpr uint64_t SText = 0x40d843a9;
 constexpr uint64_t DText = 0xc2942574;
-extern const char *vProp[];
-extern const char *tProp[];
+constexpr uint64_t TextInput = 0xd484cca2;
 } // namespace token
 
 namespace VIEW_PROP {
-constexpr uint64_t BgColor = 0xe1d473c9;
-constexpr uint64_t Border = 0xcad6f57;
-constexpr uint64_t Padding = 0x736dd56;
-constexpr uint64_t Margin = 0xc4cc799b;
-constexpr uint64_t Touch = 0xf44fb78;
 constexpr uint64_t id = 0x37386ae0;
+constexpr uint64_t BgColor = 0xe1d473c9;
+constexpr uint64_t Margin = 0xc4cc799b;
+constexpr uint64_t Padding = 0x736dd56;
+constexpr uint64_t Touch = 0xf44fb78;
+constexpr uint64_t flex = 0xcae02ff2;
+constexpr uint64_t flextype = 0xc79a9105;
+constexpr uint64_t alignItems = 0xb4ee9bca;
+constexpr uint64_t justifyContent = 0x6538bb8;
+constexpr uint64_t warp = 0x8efa7aaf;
+constexpr uint64_t BorderCode = 0x2c625d6;
+
 } // namespace VIEW_PROP
 
 namespace TEXT_PROP {
@@ -44,13 +46,32 @@ constexpr uint64_t id = 0x37386ae0;
 } // namespace TEXT_PROP
 } // namespace tagsToken
 
+struct configView {
+  int flex;
+  char *BgColor;
+  int margin;
+  int padding;
+  bool touch;
+  int flextype;
+  int alignItems;
+  int justifyContent;
+};
+struct Text {
+  char *color;
+  char *textBlob;
+  bool isGrad;
+  int len;
+};
+
 class node {
 public:
   uint64_t ltoken{0};
-  char *id{nullptr};
+  char *id{nullptr}; // if nullptr then notupdatable
   node *next{nullptr};
   node *prev{nullptr};
   node *child{nullptr};
+  int height{0};
+  int width{0};
 };
 
 namespace VALIDATOR {
@@ -58,9 +79,16 @@ class TOKEN {
 public:
   node *getNextNode(xmlNode *);
   bool validateRoot(xmlNode *);
+  void resolveProp(xmlNode *, const char *[], uint64_t &);
 
 private:
-  const char *xmlTags[3] = {"View", "STEXT", "DTEXT"};
+  const char *xmlTags[5] = {"View", "STEXT", "DTEXT", "TextInput", nullptr};
+  const char *viewProp[12] = {"id",        "BgColor",    "Margin",
+                              "Padding",   "Touch",      "flex",
+                              "flex-type", "alignItems", "justifyContent",
+                              "warp",      "BorderCode", nullptr};
+  const char *TextProp[8] = {"Color", "Bold",     "Underline", "Dim",
+                             "Blink", "Inverted", "id",        nullptr};
   const char *rootTag = "TUIEngine";
 };
 }; // namespace VALIDATOR
