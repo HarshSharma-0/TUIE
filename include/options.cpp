@@ -43,10 +43,8 @@ int listAndSelect(std::filesystem::path &dir) {
 
       CURSORXY(i + 2, 1);
       if (i == selected) {
-        BOLDTEXT;
-        UNDERLINETEXT;
         TEXTCOLOR(REDLF, DEFAULTCOLORB);
-        std::cout << list[i];
+        std::cout << ESCSTART << BOLDTEXT << UNDERLINETEXT << ESCEND << list[i];
         RESETTEXT;
       } else {
         std::cout << list[i] << "\n";

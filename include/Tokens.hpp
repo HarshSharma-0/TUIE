@@ -4,6 +4,7 @@
 #include "libxml/parser.h"
 #include <cstdint>
 #include <malloc.h>
+#include <string>
 
 #define __APP_ENTRY "app/home/home.xml"
 #define __APP_ROOT ".local/TUIE"
@@ -15,8 +16,7 @@ uint64_t generateFNVTOKEN(const char *);
 
 namespace token {
 constexpr uint64_t View = 0x5e4baa18;
-constexpr uint64_t SText = 0x40d843a9;
-constexpr uint64_t DText = 0xc2942574;
+constexpr uint64_t Text = 0x40d843a9;
 constexpr uint64_t TextInput = 0xd484cca2;
 } // namespace token
 
@@ -34,7 +34,14 @@ constexpr uint64_t warp = 0x8efa7aaf;
 constexpr uint64_t BorderCode = 0x2c625d6;
 
 } // namespace VIEW_PROP
-
+namespace VALUE_VIEW {
+constexpr uint64_t row = 0x440e1d7b;
+constexpr uint64_t center = 0x58c4484;
+constexpr uint64_t spaceBetween = 0x8d57d378;
+constexpr uint64_t spaceAround = 0xd21f93d1;
+constexpr uint64_t flexEnd = 0x34a91f2;
+constexpr uint64_t flexStart = 0x9b778b97;
+}; // namespace VALUE_VIEW
 namespace TEXT_PROP {
 constexpr uint64_t Color = 0xe5b43cf8;
 constexpr uint64_t Bold = 0x45768d96;
@@ -49,9 +56,11 @@ constexpr uint64_t id = 0x37386ae0;
 struct configView {
   int flex;
   char *BgColor;
+  char *borderCode;
   int margin;
   int padding;
   bool touch;
+  bool warp;
   int flextype;
   int alignItems;
   int justifyContent;
@@ -70,6 +79,8 @@ public:
   node *next{nullptr};
   node *prev{nullptr};
   node *child{nullptr};
+  struct configView *flagView{nullptr};
+  struct Text *flagText{nullptr};
   int height{0};
   int width{0};
 };
@@ -79,9 +90,12 @@ class TOKEN {
 public:
   node *getNextNode(xmlNode *);
   bool validateRoot(xmlNode *);
-  void resolveProp(xmlNode *, const char *[], uint64_t &);
+  void resolveProp(xmlNode *, const char *[], node *);
 
 private:
+  void resolveViewValue(node *, uint64_t &, xmlChar *);
+  void resolveTextValue(node *, uint64_t &, xmlChar *, std::string &);
+
   const char *xmlTags[5] = {"View", "STEXT", "DTEXT", "TextInput", nullptr};
   const char *viewProp[12] = {"id",        "BgColor",    "Margin",
                               "Padding",   "Touch",      "flex",

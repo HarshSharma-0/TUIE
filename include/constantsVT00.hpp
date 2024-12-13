@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 
+#define ESCSTART "\033["
+#define ESCEND "m"
 // cursor macro
 #define ESCC '\033'
 #define ESC "\033"
@@ -20,18 +22,18 @@
 
 // text attribute macro
 #define RESETTEXT printf(ESC "[0m");
-#define BOLDTEXT "\033[1m"
-#define RESETBOLD "\033[21m"
-#define UNDERLINETEXT "\033[4m"
-#define RESETUNDERLINE "\033[24m"
-#define DIMTEXT "\033[2m"
-#define RESETDIM "\033[22m"
-#define BLINKTEXT "\033[5m"
-#define RESETBLINK "\033[25m"
-#define INVERTEDTEXT "\033[7m"
-#define RESETINVERTED "\033[27m"
-#define INVISIBLETEXT "\033[8m"
-#define RESETINVISIBLE "\033[28m"
+#define BOLDTEXT "1"
+#define RESETBOLD "21"
+#define UNDERLINETEXT "4"
+#define RESETUNDERLINE "24"
+#define DIMTEXT "2"
+#define RESETDIM "22"
+#define BLINKTEXT "5"
+#define RESETBLINK "25"
+#define INVERTEDTEXT "7"
+#define RESETINVERTED "27"
+#define INVISIBLETEXT "8"
+#define RESETINVISIBLE "28"
 
 #define SETWIN(W, H) printf(ESC "[%d;%dr", (W), (H))
 #define CLEARRIGHT printf(ESC "[K")

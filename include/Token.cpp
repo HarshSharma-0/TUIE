@@ -1,8 +1,10 @@
 #include "Tokens.hpp"
 #include "libxml/parser.h"
 #include "libxml/xmlstring.h"
+#include <cstddef>
 #include <cstdint>
 #include <iostream>
+#include <string>
 
 node *VALIDATOR::TOKEN::getNextNode(xmlNode *tag) {
   node *tmpNode{nullptr};
@@ -11,13 +13,19 @@ node *VALIDATOR::TOKEN::getNextNode(xmlNode *tag) {
   tmpNode->ltoken = tagsToken::generateFNVTOKEN((const char *)tag->name);
   switch (tmpNode->ltoken) {
   case tagsToken::token::View:
-    resolveProp(tag, viewProp, tmpNode->ltoken);
+    tmpNode->flagView = new configView;
+    if (tmpNode->flagView == nullptr) {
+      return nullptr;
+    }
+    resolveProp(tag, viewProp, tmpNode);
     break;
-  case tagsToken::token::SText:
-    resolveProp(tag, TextProp, tmpNode->ltoken);
-    break;
-  case tagsToken::token::DText:
-    resolveProp(tag, TextProp, tmpNode->ltoken);
+  case tagsToken::token::Text:
+    tmpNode->flagText = new Text;
+    if (tmpNode->flagText == nullptr) {
+      return nullptr;
+    }
+
+    resolveProp(tag, TextProp, tmpNode);
     break;
   case tagsToken::token::TextInput:
 
@@ -28,89 +36,35 @@ node *VALIDATOR::TOKEN::getNextNode(xmlNode *tag) {
 }
 
 void VALIDATOR::TOKEN::resolveProp(xmlNode *nodeRef, const char *ref[],
-                                   uint64_t &type) {
+                                   node *type) {
   xmlChar *tmp = nullptr;
   uint64_t token{0};
+  std::string color = "/";
 
   while (*ref) {
     tmp = xmlGetProp(nodeRef, (const xmlChar *)*ref);
     if (tmp != NULL) {
       token = tagsToken::generateFNVTOKEN(*ref);
-      switch (type) {
+      switch (type->ltoken) {
       case tagsToken::token::View:
-        switch (token) {
-        case tagsToken::VIEW_PROP::id:
-
-          break;
-        case tagsToken::VIEW_PROP::BgColor:
-
-          break;
-        case tagsToken::VIEW_PROP::Margin:
-
-          break;
-        case tagsToken::VIEW_PROP::Padding:
-
-          break;
-        case tagsToken::VIEW_PROP::Touch:
-
-          break;
-        case tagsToken::VIEW_PROP::flex:
-
-          break;
-        case tagsToken::VIEW_PROP::flextype:
-
-          break;
-        case tagsToken::VIEW_PROP::alignItems:
-
-          break;
-        case tagsToken::VIEW_PROP::justifyContent:
-
-          break;
-        case tagsToken::VIEW_PROP::warp:
-
-          break;
-        case tagsToken::VIEW_PROP::BorderCode:
-
-          break;
-        }
+        resolveViewValue(type, token, tmp);
         break;
-      case tagsToken::token::DText:
+      case tagsToken::token::Text:
         switch (token) {
         case tagsToken::TEXT_PROP::id:
-          break;
-        }
-
-      case tagsToken::token::SText:
-        switch (token) {
-        case tagsToken::TEXT_PROP::Color:
-
-          break;
-        case tagsToken::TEXT_PROP::Bold:
-
-          break;
-        case tagsToken::TEXT_PROP::UnderLine:
-
-          break;
-        case tagsToken::TEXT_PROP::Dim:
-
-          break;
-        case tagsToken::TEXT_PROP::Blink:
-
-          break;
-        case tagsToken::TEXT_PROP::Inverted:
-
-          break;
-        case tagsToken::TEXT_PROP::id:
-
+          type->id = (char *)xmlStrdup(tmp);
           break;
         }
         break;
       }
-
       xmlFree(tmp);
     }
     ++ref;
   }
+  if (color != "/") {
+    color += "m";
+  }
+
   return;
 }
 
