@@ -9,9 +9,9 @@ public:
   int parser(std::filesystem::path &);
   void parserClean();
   void parserCleanXml();
+  node *renderNodes{nullptr};
 
 private:
-  node *renderNodes{nullptr};
   xmlDoc *rootXml{nullptr};
   xmlNode *rootNode{nullptr};
 };

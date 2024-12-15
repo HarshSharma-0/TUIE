@@ -1,27 +1,39 @@
 #include "Tokens.hpp"
 #include "libxml/parser.h"
+#include "libxml/xmlmemory.h"
 #include "libxml/xmlstring.h"
 #include <cstddef>
 #include <cstdint>
-#include <iostream>
 #include <string>
 
 node *VALIDATOR::TOKEN::getNextNode(xmlNode *tag) {
   node *tmpNode{nullptr};
+  uint64_t tmpToken = tagsToken::generateFNVTOKEN((const char *)tag->name);
 
-  tmpNode = new node;
-  tmpNode->ltoken = tagsToken::generateFNVTOKEN((const char *)tag->name);
-  switch (tmpNode->ltoken) {
+  switch (tmpToken) {
   case tagsToken::token::View:
+    tmpNode = new node;
+    if (tmpNode == nullptr) {
+      return nullptr;
+    }
+    tmpNode->ltoken = tmpToken;
     tmpNode->flagView = new configView;
+
     if (tmpNode->flagView == nullptr) {
+      delete tmpNode;
       return nullptr;
     }
     resolveProp(tag, viewProp, tmpNode);
     break;
   case tagsToken::token::Text:
+    tmpNode = new node;
+    if (tmpNode == nullptr) {
+      return nullptr;
+    }
+    tmpNode->ltoken = tmpToken;
     tmpNode->flagText = new Text;
     if (tmpNode->flagText == nullptr) {
+      delete tmpNode;
       return nullptr;
     }
 
@@ -88,3 +100,38 @@ uint64_t tagsToken::generateFNVTOKEN(const char *delta) {
   outMask = outMask ^ offsetMask;
   return outMask;
 };
+
+node::~node() {
+  if (id != nullptr) {
+    xmlFree(id);
+  }
+  if (ltoken == tagsToken::token::View) {
+    if (flagView != nullptr) {
+      if (flagView->BgColor != nullptr) {
+        xmlFree(flagView->BgColor);
+      }
+      if (flagView->borderCode != nullptr) {
+        xmlFree(flagView->borderCode);
+      }
+      delete flagView;
+    }
+  }
+  if (ltoken == tagsToken::token::Text) {
+    if (flagText != nullptr) {
+      if (flagText->color != nullptr) {
+        xmlFree(flagText->color);
+      }
+      if (flagText->textBlob != nullptr) {
+        xmlFree(flagText->textBlob);
+      }
+      delete flagText;
+    }
+  }
+  if (next != nullptr) {
+    delete next;
+  }
+  if (child != nullptr) {
+    delete child;
+  }
+  return;
+}

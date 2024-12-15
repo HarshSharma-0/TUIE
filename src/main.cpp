@@ -2,25 +2,18 @@
 #include "init.hpp"
 #include "iostream"
 #include "parser.hpp"
+#include "renderer.hpp"
 
 int main() {
   INIT_TUIE INIT((char *)"fist");
   OPEN_APP OPEN;
+  renderer SCREEN;
   int proceed = OPEN.parser(INIT.appPath);
-  switch (proceed) {
-  case -1:
+  if (proceed == -1) {
     std::cout << __ERROR_FILE << INIT.appPath << std::endl;
-    return -1;
-  case -2:
-    std::cout << "parser error" << std::endl;
-    break;
-  case -3:
-    break;
-    break;
-  default:
-
-    break;
   }
-
+  SCREEN.setNode(OPEN.renderNodes);
+  OPEN.parserCleanXml();
+  OPEN.parserClean();
   return 0;
 }

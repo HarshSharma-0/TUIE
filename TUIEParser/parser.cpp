@@ -4,7 +4,6 @@
 #include "libxml/xmlversion.h"
 #include <cstdlib>
 #include <filesystem>
-#include <iostream>
 
 int OPEN_APP::parser(std::filesystem::path &appxml) {
   LIBXML_TEST_VERSION;
@@ -28,16 +27,14 @@ int OPEN_APP::parser(std::filesystem::path &appxml) {
           if (appNode->type == XML_ELEMENT_NODE) {
             if (renderNodes != nullptr) {
               crawler->next = TOKEN.getNextNode(appNode);
-              if (crawler->next == nullptr) {
-                return -2;
+              if (crawler->next != nullptr) {
+                crawler = crawler->next;
               }
-              crawler = crawler->next;
               continue;
             }
             renderNodes = TOKEN.getNextNode(appNode);
-            if (renderNodes == nullptr)
-              return -2;
-            crawler = renderNodes;
+            if (renderNodes != nullptr)
+              crawler = renderNodes;
           }
         }
       } else {

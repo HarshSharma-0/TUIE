@@ -54,22 +54,22 @@ constexpr uint64_t id = 0x37386ae0;
 } // namespace tagsToken
 
 struct configView {
-  int flex;
-  char *BgColor;
-  char *borderCode;
-  int margin;
-  int padding;
-  bool touch;
-  bool warp;
-  int flextype;
-  int alignItems;
-  int justifyContent;
+  int flex{0};
+  char *BgColor{nullptr};
+  char *borderCode{nullptr};
+  int margin{0};
+  int padding{0};
+  bool touch{false};
+  bool warp{false};
+  int flextype{0};
+  int alignItems{0};
+  int justifyContent{0};
 };
 struct Text {
-  char *color;
-  char *textBlob;
-  bool isGrad;
-  int len;
+  char *color{nullptr};
+  char *textBlob{nullptr};
+  bool isGrad{false};
+  int len{0};
 };
 
 class node {
@@ -83,9 +83,11 @@ public:
   struct Text *flagText{nullptr};
   int height{0};
   int width{0};
+  ~node();
 };
 
 namespace VALIDATOR {
+void freeNode(node *);
 class TOKEN {
 public:
   node *getNextNode(xmlNode *);
@@ -96,7 +98,6 @@ private:
   void resolveViewValue(node *, uint64_t &, xmlChar *);
   void resolveTextValue(node *, uint64_t &, xmlChar *, std::string &);
 
-  const char *xmlTags[5] = {"View", "STEXT", "DTEXT", "TextInput", nullptr};
   const char *viewProp[12] = {"id",        "BgColor",    "Margin",
                               "Padding",   "Touch",      "flex",
                               "flex-type", "alignItems", "justifyContent",
