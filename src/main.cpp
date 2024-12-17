@@ -11,9 +11,12 @@ int main() {
   int proceed = OPEN.parser(INIT.appPath);
   if (proceed == -1) {
     std::cout << __ERROR_FILE << INIT.appPath << std::endl;
+    INIT.EXIT_RAW_MODE();
+    return -1;
   }
-  SCREEN.setNode(OPEN.renderNodes);
+  SCREEN.initRenderer(OPEN.renderNodes);
   OPEN.parserCleanXml();
   OPEN.parserClean();
+  INIT.EXIT_RAW_MODE();
   return 0;
 }

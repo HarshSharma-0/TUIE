@@ -54,7 +54,7 @@ constexpr uint64_t id = 0x37386ae0;
 } // namespace tagsToken
 
 struct configView {
-  int flex{0};
+  int flex{1};
   char *BgColor{nullptr};
   char *borderCode{nullptr};
   int margin{0};
@@ -71,6 +71,12 @@ struct Text {
   bool isGrad{false};
   int len{0};
 };
+struct Layout {
+  int height{0};
+  int width{0};
+  int offsetX{0};
+  int offsetY{0};
+};
 
 class node {
 public:
@@ -79,10 +85,9 @@ public:
   node *next{nullptr};
   node *prev{nullptr};
   node *child{nullptr};
-  struct configView *flagView{nullptr};
-  struct Text *flagText{nullptr};
-  int height{0};
-  int width{0};
+  configView *flagView{nullptr};
+  Text *flagText{nullptr};
+  Layout *layout{nullptr};
   ~node();
 };
 

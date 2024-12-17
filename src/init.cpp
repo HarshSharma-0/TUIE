@@ -28,7 +28,6 @@ INIT_TUIE::INIT_TUIE(char *appName) {
       std::cout << "NOTING SELECTED EXITING" << std::endl;
       std::exit(EXIT_SUCCESS);
     }
-    INIT_TUIE::EXIT_RAW_MODE();
   }
 }
 

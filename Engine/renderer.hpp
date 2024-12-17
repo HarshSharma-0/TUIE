@@ -4,21 +4,21 @@
 #include "Tokens.hpp"
 class renderer {
 public:
-  void updateFron(node *);
+  void updateFrom(node *);
   void refresh();
-  void render();
-  void reCalculateLayout();
+  void reCalculateLayout(node *, struct Layout *);
   void updateScale();
-  void setNode(node *);
+  void initRenderer(node *);
 
 private:
   void resolveGrad();
   void getDimension();
   void updateColor();
+  void render(node *, char *);
   char *renderBuffer{nullptr};
-  int *bufferHeight{nullptr};
-  int *bufferWidth{nullptr};
+  Layout rootLayout;
   int scale{1};
   node *root{nullptr};
+  bool isColorUpdated{false};
 };
 #endif // !__RENDERER_TUIE__
