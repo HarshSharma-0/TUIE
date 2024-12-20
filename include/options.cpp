@@ -87,7 +87,7 @@ int listAndSelect(std::filesystem::path &dir) {
     }
     std::cout.flush();
   }
-  CURSORRESET;
+  CURSORXY(1, 1);
   CLEARSCREEN;
   CURSORSHOW;
   dir = list[selected];

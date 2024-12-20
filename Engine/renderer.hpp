@@ -14,7 +14,7 @@ private:
   void resolveGrad();
   void getDimension();
   void updateColor();
-  void render(node *, char *);
+  void render(node *);
   char *renderBuffer{nullptr};
   Layout rootLayout;
   int scale{1};

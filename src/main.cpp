@@ -5,10 +5,11 @@
 #include "renderer.hpp"
 
 int main() {
-  INIT_TUIE INIT((char *)"fist");
+  INIT_TUIE INIT((char *)"myapp");
   OPEN_APP OPEN;
   renderer SCREEN;
   int proceed = OPEN.parser(INIT.appPath);
+  INIT.INIT_RAW_MODE();
   if (proceed == -1) {
     std::cout << __ERROR_FILE << INIT.appPath << std::endl;
     INIT.EXIT_RAW_MODE();

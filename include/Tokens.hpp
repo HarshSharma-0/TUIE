@@ -74,8 +74,9 @@ struct Text {
 struct Layout {
   int height{0};
   int width{0};
-  int offsetX{0};
-  int offsetY{0};
+  int offsetX{1};
+  int offsetY{1};
+  int cells{0};
 };
 
 class node {

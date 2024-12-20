@@ -13,7 +13,7 @@
 #define CURSORRIGHT(n) printf(ESC "[%dC", (n))
 #define CURSORLEFT(n) printf(ESC "[%dD", (n))
 #define CURSORXY(Y, X) printf(ESC "[%d;%dH", (Y), (X))
-#define CURSORRESET printf(ESC "[f")
+#define CURSORRESET printf(ESC "[H")
 #define SCROLLDOWN printf(ESC "D")
 #define SCROLLUP printf(ESC "M")
 #define CURSORHIDE printf(ESC "[?25l")
@@ -43,6 +43,7 @@
 #define CLEARDOWN printf(ESC "[J")
 #define CLEARUP printf(ESC "[1J")
 #define CLEARSCREEN printf(ESC "[2J")
+#define CLEARSCROLl printf(ESC "[3J")
 
 #define DEVSTAT printf(ESC "5n")
 #define DEVOK "\0330n"

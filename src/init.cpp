@@ -1,5 +1,6 @@
 #include "init.hpp"
 #include "Tokens.hpp"
+#include "constantsVT00.hpp"
 #include "options.hpp"
 #include <asm-generic/ioctls.h>
 #include <asm-generic/termbits-common.h>
@@ -28,10 +29,12 @@ INIT_TUIE::INIT_TUIE(char *appName) {
       std::cout << "NOTING SELECTED EXITING" << std::endl;
       std::exit(EXIT_SUCCESS);
     }
+    // INIT_TUIE::EXIT_RAW_MODE();
   }
 }
 
 int INIT_TUIE::INIT_RAW_MODE() {
+
   winsize ws;
   if (tcgetattr(STDIN_FILENO, &org_setting) == -1)
     return -1;

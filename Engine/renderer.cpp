@@ -7,21 +7,30 @@
 #include <cstring>
 #include <unistd.h>
 
-void renderer::render(node *__node, char *__tmp) {
-  for (int i = 0; i < rootLayout.width * rootLayout.height; i++) {
-    renderBuffer[i] = 'a';
-  }
-  return;
-}
-void renderer::refresh() {
-  CLEARSCREEN;
-  CURSORRESET;
-  CURSORXY(0, 0);
-  for (int i = 0; i < rootLayout.height; i++) {
-    write(STDOUT_FILENO, (char *)'1', 1);
-    CURSORDOWN(i + 1);
+void renderer::render(node *__node) {
+  const char borderh = '-';
+  const char borderv = '|';
+  int index = 0;
+  // Top horizontal border
+  for (int i = 0; i < __node->layout->width; i++) {
+    index = (__node->layout->offsetY * rootLayout.width) - 1;
+    index += __node->layout->offsetX + i;
+    renderBuffer[index] = borderh;
   }
 
+  return;
+}
+
+void renderer::refresh() {
+  CLEARSCROLl;
+  CLEARDOWN;
+  CURSORRESET;
+
+  for (int i = 0; i < rootLayout.height; i++) {
+    CURSORXY(i + 1, 1);
+    write(STDOUT_FILENO, &renderBuffer[(rootLayout.width * i)],
+          rootLayout.width);
+  }
   sleep(5);
   return;
 }
@@ -29,8 +38,8 @@ void renderer::refresh() {
 void renderer::initRenderer(node *__set) {
   root = __set;
   getDimension();
-  renderBuffer = new char[rootLayout.height * rootLayout.width];
-  reCalculateLayout(__set, &rootLayout);
+
+  //  reCalculateLayout(__set, &rootLayout);
   //  updateColor();
   refresh();
   return;
@@ -43,6 +52,11 @@ void renderer::getDimension() {
   }
   rootLayout.height = ws.ws_row;
   rootLayout.width = ws.ws_col;
+  rootLayout.cells = ws.ws_col * ws.ws_row;
+  renderBuffer = new char[rootLayout.cells];
+  for (int i = 0; i < rootLayout.cells; i++) {
+    renderBuffer[i] = '0';
+  }
   rootLayout.offsetX = 0;
   rootLayout.offsetY = 0;
 
@@ -78,16 +92,15 @@ void renderer::reCalculateLayout(node *__tmpNode, struct Layout *layout) {
       break;
     }
   }
-  char test[2] = {'U', 'D'};
-  int i = 0;
+
   for (node *cur = __tmpNode; cur; cur = cur->next) {
+
     switch (cur->ltoken) {
     case tagsToken::token::View:
       cur->layout->height = layout->height * (cur->flagView->flex / totalflex);
       cur->layout->offsetY = clampY;
       clampY += cur->layout->height;
-      render(cur, &test[i]);
-      i++;
+      render(cur);
       break;
     }
   }
