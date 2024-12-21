@@ -5,6 +5,7 @@
 #include <asm-generic/termios.h>
 #include <bits/ioctl.h>
 #include <cstring>
+#include <iostream>
 #include <unistd.h>
 
 void renderer::render(node *__node) {
@@ -23,9 +24,8 @@ void renderer::render(node *__node) {
 
 void renderer::refresh() {
   CLEARSCROLl;
-  CLEARDOWN;
   CURSORRESET;
-
+  std::cout.flush();
   for (int i = 0; i < rootLayout.height; i++) {
     CURSORXY(i + 1, 1);
     write(STDOUT_FILENO, &renderBuffer[(rootLayout.width * i)],
@@ -38,7 +38,6 @@ void renderer::refresh() {
 void renderer::initRenderer(node *__set) {
   root = __set;
   getDimension();
-
   //  reCalculateLayout(__set, &rootLayout);
   //  updateColor();
   refresh();
@@ -59,7 +58,7 @@ void renderer::getDimension() {
   }
   rootLayout.offsetX = 0;
   rootLayout.offsetY = 0;
-
+  SETWIN(1, ws.ws_row);
   return;
 }
 

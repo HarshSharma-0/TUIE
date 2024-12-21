@@ -53,6 +53,7 @@ int INIT_TUIE::INIT_RAW_MODE() {
 
   INIT_TUIE::windowWidth = ws.ws_col;
   INIT_TUIE::windowHeight = ws.ws_row;
+
   return 0;
 }
 
